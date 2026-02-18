@@ -6,3 +6,4 @@ venv/
 output/
 .DS_Store
 .env
+app_BROKEN_BACKUP.py
