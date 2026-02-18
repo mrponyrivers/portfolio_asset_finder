@@ -1,3 +1,15 @@
+## Quickstart (standalone)
+```bash
+cd portfolio_asset_finder
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+
+# add your SerpAPI key (don't commit it)
+export SERPAPI_API_KEY="YOUR_KEY"
+
+python -m streamlit run app.py
+
 # Portfolio Asset Finder + Organizer (Streamlit)
 
 Searches public web sources (via SerpAPI or Bing), lets you select results, downloads open image URLs where permitted, and organizes them into a portfolio folder structure with metadata + an Instagram pack (caption/credits/hashtags).
