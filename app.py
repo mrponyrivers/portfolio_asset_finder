@@ -26,7 +26,7 @@ st.sidebar.header("Search Provider")
 provider_choice = st.sidebar.selectbox(
     "Provider",
     ["SerpAPI (recommended)", "Bing Web Search API", "Mock (no API key)"],
-    index=0,
+    index=2,
 )
 
 if provider_choice == "Mock (no API key)":
