@@ -15,7 +15,6 @@ A lightweight tool to **find, organize, and export portfolio-ready asset links**
 - 🧷 Instagram support is **links-only by default** (no private scraping)
 
 ---
----
 
 ## How to use
 
