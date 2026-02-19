@@ -41,6 +41,9 @@ Each run creates a timestamped folder inside `output/` (recommended) with clean 
 
 ---
 ## Live Demo
+  * Portfolio Assets Finder — structured search → review results → export organized run folders (public web + IG links-only)
+Live: [Open demo](https://mrponyrivers-portfolio-asset-finder.streamlit.app/)
+Repo: [View code](https://github.com/mrponyrivers/portfolio_asset_finder)
 
 - **Live Demo:** (https://mrponyrivers-portfolio-asset-finder.streamlit.app/)
 - **Local Demo:** run the Quickstart below
