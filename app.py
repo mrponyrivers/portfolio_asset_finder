@@ -186,9 +186,12 @@ if "RUN_SEARCH_NOW" not in st.session_state:
 # =========================
 st.sidebar.title("Portfolio Asset Finder + Organizer")
 
-c1, c2 = st.sidebar.columns(2)
-c1.button("Load sample profile", on_click=load_sample_profile)
-c2.button("Run demo (Mock)", on_click=run_demo_search)
+c1, c2, c3 = st.sidebar.columns(3)
+c1.button("Load sample", on_click=load_sample_profile)
+c2.button("Run demo", on_click=run_demo_search)
+c3.button("Clear", on_click=clear_results)
+
+
 
 st.sidebar.caption("Tip: Click **Run demo (Mock)** to see results instantly without API keys.")
 st.sidebar.divider()
@@ -317,6 +320,17 @@ st.divider()
 if not st.session_state["results_by_source"]:
     st.info("Click **Search sources** (or **Run demo (Mock)**).")
     st.stop()
+def clear_results():
+    # Clear stored results + selections
+    st.session_state["results_by_source"] = {}
+    st.session_state["selected_urls"] = set()
+
+    # Clear any per-result checkbox keys so selections don't persist
+    for k in list(st.session_state.keys()):
+        if str(k).startswith("sel__"):
+            st.session_state.pop(k, None)
+
+    st.rerun()
 
 
 # =========================
