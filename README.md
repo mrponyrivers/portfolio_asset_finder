@@ -42,7 +42,7 @@ Each run creates a timestamped folder inside `output/` (recommended) with clean 
 ---
 ## Live Demo
 
-- **Live Demo:** (add Streamlit Cloud URL if deployed)
+- **Live Demo:** (https://mrponyrivers-portfolio-asset-finder.streamlit.app/)
 - **Local Demo:** run the Quickstart below
 
 ---
