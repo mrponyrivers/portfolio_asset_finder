@@ -56,6 +56,20 @@ def run_demo_search():
     load_sample_profile()
     st.session_state["RUN_SEARCH_NOW"] = True  # load fields + run
 
+def clear_results():
+    # Clear stored results + selections
+    st.session_state["results_by_source"] = {}
+    st.session_state["selected_urls"] = set()
+
+    # Clear per-result checkbox keys so checkmarks don't persist
+    for k in list(st.session_state.keys()):
+        if str(k).startswith("sel__"):
+            st.session_state.pop(k, None)
+
+    # Optional: show a small confirmation message
+    st.session_state["CLEARED_NOTICE"] = True
+
+
 def normalize_text(s: str) -> str:
     s = (s or "").strip().replace(",", " ")
     s = re.sub(r"\s+", " ", s)
@@ -116,15 +130,14 @@ def build_queries(
                 }
 
     if "Instagram (links-only)" in sources:
-        # Links-only via Google/Bing indexing (no IG scraping)
-        base_ig = 'site:instagram.com (inurl:/p/ OR inurl:/reel/)'
+        base_ig = "site:instagram.com (inurl:/p/ OR inurl:/reel/)"
         handle = (ig_handle or "").strip().lstrip("@")
 
         if ig_mode == "Links-only (handle only)":
             query = mk(base_ig, f"\"{handle}\"" if handle else base_query)
         elif ig_mode == "Links-only (handle + show terms)":
             query = mk(base_ig, f"\"{handle}\"" if handle else "", base_query)
-        else:  # "Links-only (show terms only)"
+        else:
             query = mk(base_ig, base_query)
 
         q["Instagram"] = {"mode": "web", "query": query}
@@ -191,9 +204,7 @@ c1.button("Load sample", on_click=load_sample_profile)
 c2.button("Run demo", on_click=run_demo_search)
 c3.button("Clear", on_click=clear_results)
 
-
-
-st.sidebar.caption("Tip: Click **Run demo (Mock)** to see results instantly without API keys.")
+st.sidebar.caption("Tip: Click **Run demo** to see results instantly without API keys.")
 st.sidebar.divider()
 
 provider_choice = st.sidebar.selectbox(
@@ -259,6 +270,11 @@ if provider_choice.startswith("Bing") and not os.environ.get("BING_API_KEY"):
     st.sidebar.warning("Bing selected but **BING_API_KEY** is not set. Use Mock or add the key in Streamlit Secrets.")
 
 
+# Optional confirmation notice after clearing
+if st.session_state.pop("CLEARED_NOTICE", False):
+    st.success("Cleared results.")
+
+
 # =========================
 # Base query (editable)
 # =========================
@@ -271,7 +287,6 @@ auto_query = mk(
     "runway backstage",
 )
 
-# Only set an initial value if none exists yet
 if "base_query" not in st.session_state or not st.session_state["base_query"].strip():
     st.session_state["base_query"] = auto_query
 
@@ -318,19 +333,8 @@ if run_now:
 st.divider()
 
 if not st.session_state["results_by_source"]:
-    st.info("Click **Search sources** (or **Run demo (Mock)**).")
+    st.info("Click **Search sources** (or **Run demo**).")
     st.stop()
-def clear_results():
-    # Clear stored results + selections
-    st.session_state["results_by_source"] = {}
-    st.session_state["selected_urls"] = set()
-
-    # Clear any per-result checkbox keys so selections don't persist
-    for k in list(st.session_state.keys()):
-        if str(k).startswith("sel__"):
-            st.session_state.pop(k, None)
-
-    st.rerun()
 
 
 # =========================
@@ -389,7 +393,6 @@ project_event = st.session_state["project_event"].strip()
 if not project_event:
     project_event = mk(brand, season, year, location) or "Untitled Project"
 
-# Timestamped folder name (matches the README claim)
 run_stamp = datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")
 project_for_folder = f"{project_event}__{run_stamp}"
 
@@ -413,7 +416,6 @@ if st.button("Download / Organize Selected", type="primary"):
         st.warning("Select at least one result.")
         st.stop()
 
-    # Flatten all SearchResult objects for quick matching
     all_results: list[SearchResult] = []
     for p in st.session_state["results_by_source"].values():
         all_results.extend(p.get("results", []) or [])
@@ -429,7 +431,6 @@ if st.button("Download / Organize Selected", type="primary"):
         matched = next((rr for rr in all_results if rr.url == page_url), None)
         downloaded: list[str] = []
 
-        # Instagram is links-only
         if "instagram.com" in page_url:
             records.append(
                 AssetRecord(
@@ -451,7 +452,6 @@ if st.button("Download / Organize Selected", type="primary"):
 
         base_name = slugify(project_event)[:30] or "asset"
 
-        # Try direct original image from image search first (if present)
         direct = getattr(matched, "image_url", "") if matched else ""
         if direct:
             chk = check_image_url(direct)
@@ -460,7 +460,6 @@ if st.button("Download / Organize Selected", type="primary"):
                 if res.ok and res.filepath:
                     downloaded.append(res.filepath)
 
-        # Otherwise, extract from page and download a few candidates
         if not downloaded:
             try:
                 img_urls = extract_image_urls_from_page(page_url, max_images=max_images_per_page)
