@@ -155,9 +155,9 @@ st.caption(
     "Instagram is links-only in Option 1."
 )
 
-# -------------------------
+# =========================
 # Session state defaults
-# -------------------------
+# =========================
 defaults = {
     "provider": "Mock (no API key)",
     "brand": "",
